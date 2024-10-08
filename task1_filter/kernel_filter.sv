@@ -28,7 +28,7 @@ logic mult_done;
 
 // logic fall_edge_det;
 // logic r_valid;
-logic r_data;
+logic [DATA_SIZE-1:0] r_data;
 
 
 logic signed [DATA_SIZE+1-1:0] temp_logic [KERNEL_SIZE-1:0][KERNEL_SIZE-1:0];
