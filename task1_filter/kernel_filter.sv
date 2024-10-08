@@ -22,12 +22,12 @@ localparam KERNEL_SIZE = 3;
 localparam KERNEL_BITS = (i_config_select == 3) ? 2 : (i_config_select == 2) ? 3 : (i_config_select == 1) ? 2 : 0;
 
 logic signed [DATA_SIZE-1:0]     w_window [KERNEL_SIZE-1:0][KERNEL_SIZE-1:0];
-logic signed [DATA_SIZE_MIN-1:0] sum_temp [(KERNEL_SIZE**2)-1:0];
+logic signed [DATA_SIZE_MIN+3-1:0] sum_temp [(KERNEL_SIZE**2)-1:0];
 
 logic mult_done;
 
-logic fall_edge_det;
-logic r_valid;
+// logic fall_edge_det;
+// logic r_valid;
 logic r_data;
 
 
@@ -39,7 +39,7 @@ logic signed [DATA_SIZE+1-1:0] window_4 [KERNEL_SIZE-1:0][KERNEL_SIZE-1:0] = '{'
 
 
 assign w_window      = (i_config_select == 3) ? window_1 : (i_config_select == 2) ? window_2 : (i_config_select == 1) ? window_3 : window_4;
-assign fall_edge_det = (!(i_valid) && r_valid);
+// assign fall_edge_det = (!(i_valid) && r_valid);
 
 always_ff @(posedge i_clk or negedge i_nrst) begin 
      if(!i_nrst) begin
@@ -74,21 +74,19 @@ end
 
 always_ff @(posedge i_clk or negedge i_nrst) begin
          if(!i_nrst) begin
-            o_data  <= '0;
+            r_data  <= '0;
             o_ready <= 1'b0;
          end else if(mult_done) begin
-            o_data    <= ((sum_temp[0] + sum_temp[1] + sum_temp[2] + sum_temp[3] + sum_temp[4] + sum_temp[5] + sum_temp[6] + sum_temp[7] + sum_temp[8]) >> KERNEL_BITS);
+            r_data    <= ((sum_temp[0] + sum_temp[1] + sum_temp[2] + sum_temp[3] + sum_temp[4] + sum_temp[5] + sum_temp[6] + sum_temp[7] + sum_temp[8]) >> KERNEL_BITS);
             o_ready <= 1'b1;
          end else begin
-            o_data <= '0;
+            r_data <= '0;
             o_ready <= 1'b0;
          end
             
 end
 
-
-
-
+assign o_data = r_data[7:0];
 
 endmodule
 
